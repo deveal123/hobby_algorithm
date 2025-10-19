@@ -1,0 +1,53 @@
+pub struct Reader{
+    pub context: Vec<u8>,
+    pub index: usize,
+}
+
+impl Reader {
+    pub fn new() -> Self {
+        use std::io::Read;
+
+        let mut context = Vec::new();
+        #[cfg(feature = "local")]
+        std::fs::File::open("input.txt").unwrap().read_to_end(&mut context).expect("Cannot read input");
+
+        #[cfg(not(feature = "local"))]
+        std::io::stdin().read_to_end(&mut context).expect("Cannot read input");
+        Reader {
+            context,
+            index: 0,
+        }
+    }
+
+    pub fn try_next<T: std::str::FromStr>(&mut self) -> Result<T, String>
+    where
+        <T as std::str::FromStr>::Err: std::fmt::Debug,
+    {
+        while self.index < self.context.len() && self.context[self.index].is_ascii_whitespace() {
+            self.index += 1;
+        }
+
+        if self.index >= self.context.len() {
+            return Err(format!("Not enough data to read: {}", self.index));
+        }
+
+        let start_index = self.index;
+
+        while self.index < self.context.len() && !self.context[self.index].is_ascii_whitespace() {
+            self.index += 1;
+        }
+
+        let end_index = self.index;
+        let slice = &self.context[start_index..end_index];
+        T::from_str(std::str::from_utf8(slice).unwrap()).map_err(|_| {
+            format!("Cannot parse {}", std::str::from_utf8(slice).unwrap())
+        })
+    }
+
+    pub fn next<T: std::str::FromStr>(&mut self) -> T
+    where
+        <T as std::str::FromStr>::Err: std::fmt::Debug,
+    {
+        self.try_next().unwrap()
+    }
+}
