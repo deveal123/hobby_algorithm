@@ -133,7 +133,7 @@ impl Bundler {
         }
 
         output.push_str("\n");
-        output.push_str("// Original algorithm code is in https://github.com/deveal123/hobby_algorithm\n")
+        output.push_str("// Original algorithm code is in https://github.com/deveal123/hobby_algorithm\n");
         output.push_str(&original_code);
 
         output
