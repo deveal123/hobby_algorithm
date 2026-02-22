@@ -1,33 +1,20 @@
+use std::io::{self, BufWriter, Stdout, Write};
 
 pub struct Writer {
-    buffer: Vec<u8>,
+    writer: BufWriter<Stdout>,
 }
 
 impl Writer {
     pub fn new() -> Self {
         Self {
-            buffer: Vec::with_capacity(1024),
+            writer: BufWriter::new(io::stdout()),
         }
     }
     pub fn write<T: std::fmt::Display>(&mut self, val: T) {
-        use std::io::Write;
-
-        write!(&mut self.buffer, "{} ", val).unwrap();
+        write!(self.writer, "{} ", val).unwrap();
     }
 
     pub fn writeln<T: std::fmt::Display>(&mut self, val: T) {
-        use std::io::Write;
-
-        writeln!(&mut self.buffer, "{} ", val).unwrap();
-    }
-}
-
-impl Drop for Writer {
-    fn drop(&mut self) {
-        use std::io::Write;
-
-        let stdout = std::io::stdout();
-        let mut handle = stdout.lock();
-        handle.write_all(&self.buffer).unwrap();
+        writeln!(self.writer, "{} ", val).unwrap();
     }
 }

@@ -1,0 +1,14 @@
+[package]
+name = "bundler"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+syn = { version = "2.0", features = ["full", "visit"] }
+quote = "1.0"
+proc-macro2 = "1.0"
+clap = { version = "4.4", features = ["derive"] }
+walkdir = "2.4"
+regex = "1.10"
+anyhow = "1.0"
+
