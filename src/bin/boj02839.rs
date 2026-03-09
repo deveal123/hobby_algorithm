@@ -1,7 +1,7 @@
-mod algorithm{
-    pub mod io{
-        mod reader{
-            pub struct Reader{
+mod algorithm {
+    pub mod io {
+        mod reader {
+            pub struct Reader {
                 pub context: Vec<u8>,
                 pub index: usize,
             }
@@ -12,21 +12,25 @@ mod algorithm{
 
                     let mut context = Vec::new();
                     #[cfg(feature = "local")]
-                    std::fs::File::open("input.txt").unwrap().read_to_end(&mut context).expect("Cannot read input");
+                    std::fs::File::open("input.txt")
+                        .unwrap()
+                        .read_to_end(&mut context)
+                        .expect("Cannot read input");
 
                     #[cfg(not(feature = "local"))]
-                    std::io::stdin().read_to_end(&mut context).expect("Cannot read input");
-                    Reader {
-                        context,
-                        index: 0,
-                    }
+                    std::io::stdin()
+                        .read_to_end(&mut context)
+                        .expect("Cannot read input");
+                    Reader { context, index: 0 }
                 }
 
                 pub fn try_next<T: std::str::FromStr>(&mut self) -> Result<T, String>
                 where
                     <T as std::str::FromStr>::Err: std::fmt::Debug,
                 {
-                    while self.index < self.context.len() && self.context[self.index].is_ascii_whitespace() {
+                    while self.index < self.context.len()
+                        && self.context[self.index].is_ascii_whitespace()
+                    {
                         self.index += 1;
                     }
 
@@ -36,7 +40,9 @@ mod algorithm{
 
                     let start_index = self.index;
 
-                    while self.index < self.context.len() && !self.context[self.index].is_ascii_whitespace() {
+                    while self.index < self.context.len()
+                        && !self.context[self.index].is_ascii_whitespace()
+                    {
                         self.index += 1;
                     }
 
@@ -56,7 +62,7 @@ mod algorithm{
             }
         }
 
-        mod writer{
+        mod writer {
             pub struct Writer {
                 buffer: Vec<u8>,
             }
@@ -89,7 +95,6 @@ mod algorithm{
                     handle.write_all(&self.buffer).unwrap();
                 }
             }
-
         }
 
         pub use reader::Reader;
@@ -97,49 +102,47 @@ mod algorithm{
     }
 }
 
-
 use algorithm::io::{Reader, Writer};
 
-
-fn main(){
+fn main() {
     let (mut reader, mut writer) = (Reader::new(), Writer::new());
 
     let mut n = reader.next::<i32>();
 
-    match n % 5{
+    match n % 5 {
         0 => writer.writeln(n / 5),
         1 => {
-            if n >= 6{
+            if n >= 6 {
                 n -= 6;
                 writer.writeln(n / 5 + 2);
             } else {
                 writer.writeln(-1);
             }
-        },
+        }
         2 => {
-            if n >= 12{
+            if n >= 12 {
                 n -= 12;
                 writer.writeln(n / 5 + 4);
             } else {
                 writer.writeln(-1);
             }
-        },
+        }
         3 => {
-            if n >= 3{
+            if n >= 3 {
                 n -= 3;
                 writer.writeln(n / 5 + 1);
             } else {
                 writer.writeln(-1);
             }
-        },
+        }
         4 => {
-            if n >= 9{
+            if n >= 9 {
                 n -= 9;
                 writer.writeln(n / 5 + 3);
             } else {
                 writer.writeln(-1);
             }
-        },
+        }
         _ => unreachable!(),
     }
 }

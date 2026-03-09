@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use algorithm::io::{Reader, Writer};
 
-fn main(){
+fn main() {
     let (mut r, mut w) = (Reader::new(), Writer::new());
     let (n, m) = (r.next::<usize>(), r.next::<usize>());
 
@@ -10,17 +10,17 @@ fn main(){
 
     let mut index_map = HashMap::<String, usize>::with_capacity(n);
 
-    (0..n).for_each(|i|{
+    (0..n).for_each(|i| {
         let name = r.next::<String>();
         pocketmons.push(name.clone());
         index_map.insert(name, i);
     });
 
-    (0..m).for_each(|_|{
+    (0..m).for_each(|_| {
         let name = r.next::<String>();
-        if name.parse::<usize>().is_ok(){
+        if name.parse::<usize>().is_ok() {
             w.writeln(pocketmons[name.parse::<usize>().unwrap() - 1].clone());
-        }else{
+        } else {
             w.writeln(index_map.get(&name).unwrap() + 1);
         }
     });

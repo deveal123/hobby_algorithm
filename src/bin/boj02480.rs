@@ -1,5 +1,5 @@
 use algorithm::io::{Reader, Writer};
-fn main(){
+fn main() {
     let mut r = Reader::new();
     let mut w = Writer::new();
 
@@ -7,14 +7,13 @@ fn main(){
     let b = r.next::<i32>();
     let c = r.next::<i32>();
 
-    if a == b && a == c{
+    if a == b && a == c {
         w.write(10000 + a * 1000);
-    } else if a == b || a == c{
+    } else if a == b || a == c {
         w.write(1000 + a * 100);
-    } else if b == c{
+    } else if b == c {
         w.write(1000 + b * 100);
-    } else{
+    } else {
         w.write(a.max(b).max(c) * 100);
     }
-
 }

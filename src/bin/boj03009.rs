@@ -1,7 +1,7 @@
-mod algorithm{
-    pub mod io{
+mod algorithm {
+    pub mod io {
         mod reader {
-            pub struct Reader{
+            pub struct Reader {
                 pub context: Vec<u8>,
                 pub index: usize,
             }
@@ -12,21 +12,25 @@ mod algorithm{
 
                     let mut context = Vec::new();
                     #[cfg(feature = "local")]
-                    std::fs::File::open("input.txt").unwrap().read_to_end(&mut context).expect("Cannot read input");
+                    std::fs::File::open("input.txt")
+                        .unwrap()
+                        .read_to_end(&mut context)
+                        .expect("Cannot read input");
 
                     #[cfg(not(feature = "local"))]
-                    std::io::stdin().read_to_end(&mut context).expect("Cannot read input");
-                    Reader {
-                        context,
-                        index: 0,
-                    }
+                    std::io::stdin()
+                        .read_to_end(&mut context)
+                        .expect("Cannot read input");
+                    Reader { context, index: 0 }
                 }
 
                 pub fn try_next<T: std::str::FromStr>(&mut self) -> Result<T, String>
                 where
                     <T as std::str::FromStr>::Err: std::fmt::Debug,
                 {
-                    while self.index < self.context.len() && self.context[self.index].is_ascii_whitespace() {
+                    while self.index < self.context.len()
+                        && self.context[self.index].is_ascii_whitespace()
+                    {
                         self.index += 1;
                     }
 
@@ -36,7 +40,9 @@ mod algorithm{
 
                     let start_index = self.index;
 
-                    while self.index < self.context.len() && !self.context[self.index].is_ascii_whitespace() {
+                    while self.index < self.context.len()
+                        && !self.context[self.index].is_ascii_whitespace()
+                    {
                         self.index += 1;
                     }
 
@@ -55,7 +61,7 @@ mod algorithm{
                 }
             }
         }
-        mod writer{
+        mod writer {
 
             pub struct Writer {
                 buffer: Vec<u8>,
@@ -89,30 +95,25 @@ mod algorithm{
                     handle.write_all(&self.buffer).unwrap();
                 }
             }
-
         }
 
         pub use reader::Reader;
         pub use writer::Writer;
     }
-
 }
 
 #[derive(Copy, Clone)]
-pub struct Point{
+pub struct Point {
     x: i64,
     y: i64,
 }
 
-impl Point{
-    pub fn new(x: i64, y: i64) -> Self{
-        Self{
-            x,
-            y,
-        }
+impl Point {
+    pub fn new(x: i64, y: i64) -> Self {
+        Self { x, y }
     }
 
-    pub fn dist2(&self, p: &Point) -> i64{
+    pub fn dist2(&self, p: &Point) -> i64 {
         (self.x - p.x) * (self.x - p.x) + (self.y - p.y) * (self.y - p.y)
     }
 }
@@ -129,12 +130,12 @@ fn main() {
     let d13 = p1.dist2(&p3);
     let d23 = p2.dist2(&p3);
 
-    if d23 == d12 + d13{
-        writer.writeln(format!("{} {}",p2.x + p3.x - p1.x, p2.y + p3.y - p1.y));
-    } else if d12 == d13 + d23{
-        writer.writeln(format!("{} {}",p1.x + p2.x - p3.x, p1.y + p2.y - p3.y));
-    } else if d13 == d12 + d23{
-        writer.writeln(format!("{} {}",p1.x + p3.x - p2.x, p1.y + p3.y - p2.y));
+    if d23 == d12 + d13 {
+        writer.writeln(format!("{} {}", p2.x + p3.x - p1.x, p2.y + p3.y - p1.y));
+    } else if d12 == d13 + d23 {
+        writer.writeln(format!("{} {}", p1.x + p2.x - p3.x, p1.y + p2.y - p3.y));
+    } else if d13 == d12 + d23 {
+        writer.writeln(format!("{} {}", p1.x + p3.x - p2.x, p1.y + p3.y - p2.y));
     } else {
         panic!("Not a triangle");
     }

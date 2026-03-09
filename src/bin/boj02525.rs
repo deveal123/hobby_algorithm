@@ -1,5 +1,5 @@
 use algorithm::io::{Reader, Writer};
-fn main(){
+fn main() {
     let mut r = Reader::new();
     let mut w = Writer::new();
 
@@ -10,5 +10,4 @@ fn main(){
     let time = (hour * 60 + minute + duration) % 1440;
 
     w.write(format_args!("{} {}", time / 60, time % 60));
-
 }

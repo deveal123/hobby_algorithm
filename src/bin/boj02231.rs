@@ -19,7 +19,7 @@ fn get_digit_sum(n: isize) -> isize {
     sum
 }
 
-fn main(){
+fn main() {
     let (mut reader, mut writer) = (Reader::new(), Writer::new());
     let n = reader.next::<isize>();
     let mut result = 0;

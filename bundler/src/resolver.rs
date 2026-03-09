@@ -208,11 +208,18 @@ impl Resolver {
                     // Full path: "algorithm::io::reader::Reader".
                     // We check if "algorithm::io::reader" is a module.
 
-                    // Also handle `super` and `self`.
-                    // But simplified: plain join.
-                    let relative_path = format!("{}::{}", self.current_mod, path);
-                    // Check if any prefix of relative_path is a known module
-                    self.check_if_module_exists(&relative_path);
+                    let mut cleaned_path = path;
+                    if cleaned_path.starts_with("self::") {
+                        cleaned_path = &cleaned_path[6..];
+                    }
+                    if cleaned_path.starts_with("crate::") {
+                        cleaned_path = &cleaned_path[7..];
+                        let absolute_path = format!("algorithm::{}", cleaned_path);
+                        self.check_if_module_exists(&absolute_path);
+                    } else {
+                        let relative_path = format!("{}::{}", self.current_mod, cleaned_path);
+                        self.check_if_module_exists(&relative_path);
+                    }
                 }
             }
 

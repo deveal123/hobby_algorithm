@@ -2,18 +2,18 @@ use std::collections::BTreeSet;
 
 use algorithm::io::{Reader, Writer};
 
-fn vec_union<T: Ord + Copy + Clone>(a: &Vec<T>, b: &Vec<T>) -> Vec<T>{
+fn vec_union<T: Ord + Copy + Clone>(a: &Vec<T>, b: &Vec<T>) -> Vec<T> {
     let mut v = Vec::with_capacity(a.len() + b.len());
     let (mut iter_a, mut iter_b) = (a.iter(), b.iter());
     let (mut next_a, mut next_b) = (iter_a.next(), iter_b.next());
-    while next_a.is_some() || next_b.is_some(){
-        if next_a.is_none(){
+    while next_a.is_some() || next_b.is_some() {
+        if next_a.is_none() {
             v.push(*next_b.unwrap());
             next_b = iter_b.next();
         } else if next_b.is_none() {
             v.push(*next_a.unwrap());
             next_a = iter_a.next();
-        } else{
+        } else {
             let aa = next_a.unwrap();
             let bb = next_b.unwrap();
             if aa < bb {
@@ -32,23 +32,23 @@ fn vec_union<T: Ord + Copy + Clone>(a: &Vec<T>, b: &Vec<T>) -> Vec<T>{
     v
 }
 
-fn generate_apocalypse_number(apocalypse_numbers: &Vec<usize>, step: usize) -> Vec<usize>{
+fn generate_apocalypse_number(apocalypse_numbers: &Vec<usize>, step: usize) -> Vec<usize> {
     let big_step = 10usize.pow((step - 3) as u32);
     let mut new_apocalypse_numbers1: Vec<usize> = Vec::with_capacity(apocalypse_numbers.len() * 10);
     let mut new_apocalypse_numbers2: Vec<usize> = Vec::with_capacity(9 * big_step);
-    for &number in apocalypse_numbers.iter(){
-        for i in 0..10{
+    for &number in apocalypse_numbers.iter() {
+        for i in 0..10 {
             new_apocalypse_numbers1.push(10 * number + i);
         }
     }
 
-    for i in big_step..big_step * 10{
+    for i in big_step..big_step * 10 {
         new_apocalypse_numbers2.push(666 + i * 1000);
     }
     vec_union(&new_apocalypse_numbers1, &new_apocalypse_numbers2)
 }
 
-fn main(){
+fn main() {
     let (mut reader, mut writer) = (Reader::new(), Writer::new());
 
     let mut apocalypse_numbers = vec![666usize];

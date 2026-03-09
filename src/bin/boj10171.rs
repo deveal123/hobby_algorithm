@@ -1,6 +1,6 @@
-mod algorithm{
-    pub mod io{
-        pub mod writer{
+mod algorithm {
+    pub mod io {
+        pub mod writer {
 
             pub struct Writer {
                 buffer: Vec<u8>,
@@ -34,7 +34,6 @@ mod algorithm{
                     handle.write_all(&self.buffer).unwrap();
                 }
             }
-
         }
         pub use writer::Writer;
     }
@@ -43,11 +42,13 @@ mod algorithm{
 // Write code here.
 
 use algorithm::io::Writer;
-fn main(){
+fn main() {
     let mut w = Writer::new();
-    w.writeln(r#"|\_/|
+    w.writeln(
+        r#"|\_/|
 |q p|   /}
 ( 0 )"""\
 |"^"`    |
-||_/=\\__|"#);
+||_/=\\__|"#,
+    );
 }

@@ -1,5 +1,5 @@
 use algorithm::io::{Reader, Writer};
-fn main(){
+fn main() {
     let mut r = Reader::new();
     let mut w = Writer::new();
 

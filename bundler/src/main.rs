@@ -1,4 +1,5 @@
 mod bundler;
+mod cleaner;
 mod resolver;
 
 use crate::bundler::Bundler;
@@ -14,6 +15,10 @@ struct Args {
 
     #[arg(short, long)]
     output: Option<PathBuf>,
+
+    /// Remove unused items (structs, traits, functions) from bundled output using rustc dead_code analysis
+    #[arg(short, long, default_value_t = false)]
+    clean: bool,
 }
 
 fn main() {
@@ -25,7 +30,7 @@ fn main() {
     let root_dir = std::env::current_dir().unwrap();
 
     let index = ModuleIndex::new(&root_dir);
-    let bundler = Bundler::new(index);
+    let bundler = Bundler::new(index, args.clean);
 
     let bundled_code = bundler.bundle(&args.input);
 

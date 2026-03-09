@@ -1,7 +1,6 @@
 use algorithm::io::{Reader, Writer};
 
-
-fn main(){
+fn main() {
     let (mut reader, mut writer) = (Reader::new(), Writer::new());
 
     let mut scores = (0..5).map(|_| reader.next::<i32>()).collect::<Vec<_>>();

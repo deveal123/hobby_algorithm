@@ -1,0 +1,20 @@
+version: '3'
+
+tasks:
+  bundle-boj:
+    vars:
+      file: "{{.file}}"
+      output: "{{.output | default \"./bundled_test.rs\"}}"
+      clean: "{{.clean | default \"true\"}}"
+    cmds:
+      - cargo run -p bundler -- --input ./src/bin/boj{{.file}}.rs --output {{.output}} {{if eq .clean "true"}}--clean{{end}}
+      - cargo fmt -- {{.output}}
+
+  mkboj:
+    vars:
+      file: "{{.file}}"
+    cmds:
+      - cmd: powershell cp template.rs ./src/bin/boj{{.file}}.rs
+        platforms: [windows]
+      - cmd: cp template.rs ./src/bin/boj{{.file}}.rs
+        platforms: [linux, darwin]

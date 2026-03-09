@@ -1,5 +1,5 @@
 [workspace]
-members = ["bundler"]
+members = ["bundler", "generator"]
 
 [package]
 name = "algorithm"

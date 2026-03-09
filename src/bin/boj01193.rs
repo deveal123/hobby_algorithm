@@ -5,16 +5,14 @@ fn main() {
     let mut r = Reader::new();
     let mut w = Writer::new();
 
-    let f = |n: i64| -> i64{
-        n * (n + 1) >> 1
-    };
+    let f = |n: i64| -> i64 { n * (n + 1) >> 1 };
 
     let x = r.next::<i64>();
     let t = upper_bound_fn(f, x, 0, 10000).unwrap();
     let res = f(t) - x;
-    if t & 1 == 1{
+    if t & 1 == 1 {
         w.write(format!("{}/{}", 1 + res, t - res));
-    } else{
+    } else {
         w.write(format!("{}/{}", t - res, 1 + res));
     }
 }

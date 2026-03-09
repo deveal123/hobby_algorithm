@@ -1,7 +1,7 @@
 use algorithm::io::{Reader, Writer};
 use algorithm::math::Sieve;
 
-fn main(){
+fn main() {
     let (mut r, mut w) = (Reader::new(), Writer::new());
 
     let n = r.next::<usize>();

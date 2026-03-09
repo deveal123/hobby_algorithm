@@ -1,6 +1,6 @@
 use algorithm::io::{Reader, Writer};
 
-fn main(){
+fn main() {
     let mut r = Reader::new();
     let mut w = Writer::new();
 
@@ -12,5 +12,4 @@ fn main(){
     w.writeln(num1 * b);
     w.writeln(num1 * a);
     w.writeln(num1 * num2);
-
 }

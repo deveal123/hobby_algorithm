@@ -1,3 +1,4 @@
+use crate::cleaner::Cleaner;
 use crate::resolver::{ModuleIndex, Resolver};
 use std::collections::{BTreeMap, HashSet};
 use std::fs;
@@ -6,15 +7,22 @@ use std::path::Path;
 pub struct Bundler {
     resolver: Resolver,
     index: ModuleIndex,
+    cleaner: Option<Cleaner>,
 }
 
 impl Bundler {
-    pub fn new(index: ModuleIndex) -> Self {
+    pub fn new(index: ModuleIndex, clean: bool) -> Self {
+        let cleaner = if clean {
+            Some(Cleaner::new("2021"))
+        } else {
+            None
+        };
         Bundler {
             resolver: Resolver::new(ModuleIndex {
                 modules: index.modules.clone(),
             }),
             index,
+            cleaner,
         }
     }
 
@@ -90,8 +98,55 @@ impl Bundler {
                 // So we must remove `mod xxx;` lines from the content.
 
                 let mut filtered_lines = Vec::new();
+                let mut in_test_block = false;
+                let mut brace_level = 0;
+                let mut skip_next_mod = false;
+
                 for line in content.lines() {
                     let trim = line.trim();
+
+                    if trim.contains("#[cfg(test)]") {
+                        skip_next_mod = true;
+                        continue;
+                    }
+
+                    if skip_next_mod
+                        && (trim.starts_with("mod ") || trim.starts_with("pub mod "))
+                        && trim.ends_with("{")
+                    {
+                        in_test_block = true;
+                        brace_level = 1;
+                        skip_next_mod = false;
+
+                        // Count other braces on the same line if any
+                        for c in trim.chars().skip(trim.find('{').unwrap() + 1) {
+                            if c == '{' {
+                                brace_level += 1;
+                            } else if c == '}' {
+                                brace_level -= 1;
+                            }
+                        }
+
+                        if brace_level == 0 {
+                            in_test_block = false;
+                        }
+                        continue;
+                    }
+
+                    if in_test_block {
+                        for c in line.chars() {
+                            if c == '{' {
+                                brace_level += 1;
+                            } else if c == '}' {
+                                brace_level -= 1;
+                            }
+                        }
+                        if brace_level == 0 {
+                            in_test_block = false;
+                        }
+                        continue;
+                    }
+
                     if (trim.starts_with("mod ") || trim.starts_with("pub mod "))
                         && trim.ends_with(";")
                         && !trim.contains("{")
@@ -133,8 +188,14 @@ impl Bundler {
         }
 
         output.push_str("\n");
-        output.push_str("// Original algorithm code is in https://github.com/deveal123/hobby_algorithm\n");
+        output.push_str(
+            "// Original algorithm code is in https://github.com/deveal123/hobby_algorithm\n",
+        );
         output.push_str(&original_code);
+
+        if let Some(ref cleaner) = self.cleaner {
+            output = cleaner.clean(&output);
+        }
 
         output
     }

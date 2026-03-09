@@ -74,4 +74,36 @@ impl Reader {
     {
         self.try_next().unwrap()
     }
+
+    pub fn try_next_line(&mut self) -> Result<String, String> {
+        if self.cursor > 0 && self.cursor < self.buf.len() {
+            let s = &self.buf[self.cursor..];
+            if s.chars().all(|c| c == '\r' || c == '\n') {
+                self.buf.clear();
+                self.cursor = 0;
+            }
+        }
+
+        if self.cursor >= self.buf.len() {
+            self.buf.clear();
+            self.cursor = 0;
+            let bytes_read = self
+                .reader
+                .read_line(&mut self.buf)
+                .map_err(|e| e.to_string())?;
+            if bytes_read == 0 {
+                return Err("EndOfStream".to_string());
+            }
+        }
+
+        let res = self.buf[self.cursor..]
+            .trim_end_matches(|c| c == '\n' || c == '\r')
+            .to_string();
+        self.cursor = self.buf.len();
+        Ok(res)
+    }
+
+    pub fn next_line(&mut self) -> String {
+        self.try_next_line().unwrap()
+    }
 }

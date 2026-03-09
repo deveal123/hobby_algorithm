@@ -1,7 +1,7 @@
-mod algorithm{
-    pub mod io{
-        mod reader{
-            pub struct Reader{
+mod algorithm {
+    pub mod io {
+        mod reader {
+            pub struct Reader {
                 pub context: Vec<u8>,
                 pub index: usize,
             }
@@ -12,21 +12,25 @@ mod algorithm{
 
                     let mut context = Vec::new();
                     #[cfg(feature = "local")]
-                    std::fs::File::open("input.txt").unwrap().read_to_end(&mut context).expect("Cannot read input");
+                    std::fs::File::open("input.txt")
+                        .unwrap()
+                        .read_to_end(&mut context)
+                        .expect("Cannot read input");
 
                     #[cfg(not(feature = "local"))]
-                    std::io::stdin().read_to_end(&mut context).expect("Cannot read input");
-                    Reader {
-                        context,
-                        index: 0,
-                    }
+                    std::io::stdin()
+                        .read_to_end(&mut context)
+                        .expect("Cannot read input");
+                    Reader { context, index: 0 }
                 }
 
                 pub fn try_next<T: std::str::FromStr>(&mut self) -> Result<T, String>
                 where
                     <T as std::str::FromStr>::Err: std::fmt::Debug,
                 {
-                    while self.index < self.context.len() && self.context[self.index].is_ascii_whitespace() {
+                    while self.index < self.context.len()
+                        && self.context[self.index].is_ascii_whitespace()
+                    {
                         self.index += 1;
                     }
 
@@ -36,7 +40,9 @@ mod algorithm{
 
                     let start_index = self.index;
 
-                    while self.index < self.context.len() && !self.context[self.index].is_ascii_whitespace() {
+                    while self.index < self.context.len()
+                        && !self.context[self.index].is_ascii_whitespace()
+                    {
                         self.index += 1;
                     }
 
@@ -56,7 +62,7 @@ mod algorithm{
             }
         }
 
-        mod writer{
+        mod writer {
             pub struct Writer {
                 buffer: Vec<u8>,
             }
@@ -89,7 +95,6 @@ mod algorithm{
                     handle.write_all(&self.buffer).unwrap();
                 }
             }
-
         }
 
         pub use reader::Reader;
@@ -110,27 +115,29 @@ fn flatten_vec<T: Clone>(vec: &Vec<Vec<T>>) -> Vec<T> {
     flat_vec
 }
 
-fn main(){
+fn main() {
     let (mut reader, mut writer) = (Reader::new(), Writer::new());
     let (n, m): (usize, usize) = (reader.next(), reader.next());
-    
+
     let arr: Vec<usize> = (0..n).map(|_| reader.next()).collect();
 
-    let mut three_sum = (0..n).map(|i|{
-        let mut two_sum = (i + 1..n).map(|j|{
-            (j + 1..n).map(|k|{
-                arr[i] + arr[j] + arr[k]
-            }).collect::<Vec<_>>()
-        }).collect::<Vec<_>>();
-        flatten_vec(&mut two_sum)
-    }).collect::<Vec<_>>();
+    let mut three_sum = (0..n)
+        .map(|i| {
+            let mut two_sum = (i + 1..n)
+                .map(|j| {
+                    (j + 1..n)
+                        .map(|k| arr[i] + arr[j] + arr[k])
+                        .collect::<Vec<_>>()
+                })
+                .collect::<Vec<_>>();
+            flatten_vec(&mut two_sum)
+        })
+        .collect::<Vec<_>>();
     let three_sum = flatten_vec(&mut three_sum);
-    let result = three_sum.iter().filter_map(|s| {
-        if *s > m{
-            None
-        } else{
-            Some(*s)
-        }
-    }).max().unwrap();
+    let result = three_sum
+        .iter()
+        .filter_map(|s| if *s > m { None } else { Some(*s) })
+        .max()
+        .unwrap();
     writer.writeln(result);
 }

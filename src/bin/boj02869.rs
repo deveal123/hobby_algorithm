@@ -1,7 +1,7 @@
-mod algorithm{
-    pub mod io{
-        mod reader{
-            pub struct Reader{
+mod algorithm {
+    pub mod io {
+        mod reader {
+            pub struct Reader {
                 pub context: Vec<u8>,
                 pub index: usize,
             }
@@ -12,21 +12,25 @@ mod algorithm{
 
                     let mut context = Vec::new();
                     #[cfg(feature = "local")]
-                    std::fs::File::open("input.txt").unwrap().read_to_end(&mut context).expect("Cannot read input");
+                    std::fs::File::open("input.txt")
+                        .unwrap()
+                        .read_to_end(&mut context)
+                        .expect("Cannot read input");
 
                     #[cfg(not(feature = "local"))]
-                    std::io::stdin().read_to_end(&mut context).expect("Cannot read input");
-                    Reader {
-                        context,
-                        index: 0,
-                    }
+                    std::io::stdin()
+                        .read_to_end(&mut context)
+                        .expect("Cannot read input");
+                    Reader { context, index: 0 }
                 }
 
                 pub fn try_next<T: std::str::FromStr>(&mut self) -> Result<T, String>
                 where
                     <T as std::str::FromStr>::Err: std::fmt::Debug,
                 {
-                    while self.index < self.context.len() && self.context[self.index].is_ascii_whitespace() {
+                    while self.index < self.context.len()
+                        && self.context[self.index].is_ascii_whitespace()
+                    {
                         self.index += 1;
                     }
 
@@ -36,7 +40,9 @@ mod algorithm{
 
                     let start_index = self.index;
 
-                    while self.index < self.context.len() && !self.context[self.index].is_ascii_whitespace() {
+                    while self.index < self.context.len()
+                        && !self.context[self.index].is_ascii_whitespace()
+                    {
                         self.index += 1;
                     }
 
@@ -55,7 +61,7 @@ mod algorithm{
                 }
             }
         }
-        mod writer{
+        mod writer {
 
             pub struct Writer {
                 buffer: Vec<u8>,
@@ -89,20 +95,24 @@ mod algorithm{
                     handle.write_all(&self.buffer).unwrap();
                 }
             }
-
         }
 
         pub use reader::Reader;
         pub use writer::Writer;
     }
-    pub mod search{
-        pub mod binary_search{
-            pub fn lower_bound_fn<T: Ord + PartialOrd>(func: impl Fn(i64) -> T, val: T, lo: i64, hi: i64) -> Result<i64, String> {
+    pub mod search {
+        pub mod binary_search {
+            pub fn lower_bound_fn<T: Ord + PartialOrd>(
+                func: impl Fn(i64) -> T,
+                val: T,
+                lo: i64,
+                hi: i64,
+            ) -> Result<i64, String> {
                 let (mut low, mut high) = (lo, hi);
                 if func(low) >= val || func(high) < val {
                     return Err("Value out of bounds".to_string());
                 }
-                while low < high{
+                while low < high {
                     let mid = (low + high) / 2;
                     if func(mid) <= val {
                         low = mid;
@@ -113,12 +123,17 @@ mod algorithm{
                 Ok(low)
             }
 
-            pub fn upper_bound_fn<T: Ord + PartialOrd>(func: impl Fn(i64) -> T, val: T, lo: i64, hi: i64) -> Result<i64, String> {
+            pub fn upper_bound_fn<T: Ord + PartialOrd>(
+                func: impl Fn(i64) -> T,
+                val: T,
+                lo: i64,
+                hi: i64,
+            ) -> Result<i64, String> {
                 let (mut low, mut high) = (lo, hi);
                 if func(low) > val || func(high) <= val {
                     return Err("Value out of bounds".to_string());
                 }
-                while low + 1 < high{
+                while low + 1 < high {
                     let mid = (low + high) / 2;
                     if func(mid) >= val {
                         high = mid;
@@ -130,7 +145,6 @@ mod algorithm{
             }
         }
     }
-
 }
 
 // Write code here.
@@ -143,9 +157,7 @@ fn main() {
     let mut w = Writer::new();
 
     let (a, b, v) = (r.next::<i64>(), r.next::<i64>(), r.next::<i64>());
-    let f = |n: i64| -> i64{
-        a * n - b * (n - 1)
-    };
+    let f = |n: i64| -> i64 { a * n - b * (n - 1) };
 
     let ans = upper_bound_fn(f, v, 0, v).unwrap();
     w.writeln(ans);

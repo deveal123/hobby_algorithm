@@ -1,7 +1,7 @@
-mod algorithm{
-    pub mod io{
-        mod reader{
-            pub struct Reader{
+mod algorithm {
+    pub mod io {
+        mod reader {
+            pub struct Reader {
                 pub context: Vec<u8>,
                 pub index: usize,
             }
@@ -12,21 +12,25 @@ mod algorithm{
 
                     let mut context = Vec::new();
                     #[cfg(feature = "local")]
-                    std::fs::File::open("input.txt").unwrap().read_to_end(&mut context).expect("Cannot read input");
+                    std::fs::File::open("input.txt")
+                        .unwrap()
+                        .read_to_end(&mut context)
+                        .expect("Cannot read input");
 
                     #[cfg(not(feature = "local"))]
-                    std::io::stdin().read_to_end(&mut context).expect("Cannot read input");
-                    Reader {
-                        context,
-                        index: 0,
-                    }
+                    std::io::stdin()
+                        .read_to_end(&mut context)
+                        .expect("Cannot read input");
+                    Reader { context, index: 0 }
                 }
 
                 pub fn try_next<T: std::str::FromStr>(&mut self) -> Result<T, String>
                 where
                     <T as std::str::FromStr>::Err: std::fmt::Debug,
                 {
-                    while self.index < self.context.len() && self.context[self.index].is_ascii_whitespace() {
+                    while self.index < self.context.len()
+                        && self.context[self.index].is_ascii_whitespace()
+                    {
                         self.index += 1;
                     }
 
@@ -36,7 +40,9 @@ mod algorithm{
 
                     let start_index = self.index;
 
-                    while self.index < self.context.len() && !self.context[self.index].is_ascii_whitespace() {
+                    while self.index < self.context.len()
+                        && !self.context[self.index].is_ascii_whitespace()
+                    {
                         self.index += 1;
                     }
 
@@ -55,7 +61,7 @@ mod algorithm{
                 }
             }
         }
-        mod writer{
+        mod writer {
 
             pub struct Writer {
                 buffer: Vec<u8>,
@@ -89,24 +95,23 @@ mod algorithm{
                     handle.write_all(&self.buffer).unwrap();
                 }
             }
-
         }
 
         pub use reader::Reader;
         pub use writer::Writer;
     }
-    pub mod math{
-        pub mod linalg{
+    pub mod math {
+        pub mod linalg {
             use super::Arithmetic;
 
             #[derive(Clone)]
-            pub struct Matrix2<T>{
+            pub struct Matrix2<T> {
                 pub _row: usize,
                 pub _col: usize,
-                pub _arr: Vec<T>
+                pub _arr: Vec<T>,
             }
 
-            pub struct StepIterator<'a, T>{
+            pub struct StepIterator<'a, T> {
                 start: usize,
                 end: usize,
                 step: usize,
@@ -114,12 +119,14 @@ mod algorithm{
             }
 
             impl<T> Iterator for StepIterator<'_, T>
-            where T: Copy{
+            where
+                T: Copy,
+            {
                 type Item = T;
 
                 fn next(&mut self) -> Option<Self::Item> {
-                    if self.start >= self.end{
-                        return None
+                    if self.start >= self.end {
+                        return None;
                     }
                     let val = self.arr[self.start];
                     self.start += self.step;
@@ -136,73 +143,72 @@ mod algorithm{
 
                 fn nth(&mut self, n: usize) -> Option<Self::Item> {
                     let idx = self.start + self.step * n;
-                    if idx >= self.end{
+                    if idx >= self.end {
                         None
-                    } else{
+                    } else {
                         Some(self.arr[idx])
                     }
                 }
             }
 
             impl<T> Matrix2<T>
-            where T: Copy + Default{
-                pub fn new(row: usize, col: usize, arr: Vec<T>) -> Result<Self, String>{
-                    if row * col != arr.len(){
-                        Err("Martix init fail : shape does not match with length of array.".to_string())
-                    } else{
-                        Ok(
-                            Self{
-                                _row: row, _col: col, _arr: arr
-                            }
+            where
+                T: Copy + Default,
+            {
+                pub fn new(row: usize, col: usize, arr: Vec<T>) -> Result<Self, String> {
+                    if row * col != arr.len() {
+                        Err(
+                            "Martix init fail : shape does not match with length of array."
+                                .to_string(),
                         )
+                    } else {
+                        Ok(Self {
+                            _row: row,
+                            _col: col,
+                            _arr: arr,
+                        })
                     }
                 }
 
-                pub fn shape(&self) -> (usize, usize){
+                pub fn shape(&self) -> (usize, usize) {
                     (self._row, self._col)
                 }
 
-                pub fn rows(&self, idx: usize) -> Result<StepIterator<T>, String>{
-                    if idx >= self._row{
+                pub fn rows(&self, idx: usize) -> Result<StepIterator<T>, String> {
+                    if idx >= self._row {
                         Err("Matrix rows : Out of bounds".to_string())
-                    } else{
-                        Ok(
-                            StepIterator{
-                                start: idx * self._col,
-                                end: (idx + 1) * self._col,
-                                step: 1,
-                                arr: &self._arr
-                            }
-                        )
+                    } else {
+                        Ok(StepIterator {
+                            start: idx * self._col,
+                            end: (idx + 1) * self._col,
+                            step: 1,
+                            arr: &self._arr,
+                        })
                     }
                 }
 
-                pub fn cols(&self, idx: usize) -> Result<StepIterator<T>, String>{
-                    if idx >= self._col{
+                pub fn cols(&self, idx: usize) -> Result<StepIterator<T>, String> {
+                    if idx >= self._col {
                         Err("Matrix cols : Out of bounds".to_string())
-                    } else{
-                        Ok(
-                            StepIterator{
-                                start: idx,
-                                end: self._row * self._col,
-                                step: self._col,
-                                arr: &self._arr,
-                            }
-                        )
+                    } else {
+                        Ok(StepIterator {
+                            start: idx,
+                            end: self._row * self._col,
+                            step: self._col,
+                            arr: &self._arr,
+                        })
                     }
                 }
 
-                pub fn transpose(&self) -> Self{
+                pub fn transpose(&self) -> Self {
                     let mut new_arr = Vec::new();
                     new_arr.resize_with(self._row * self._col, T::default);
 
-                    self._arr.iter().enumerate().for_each(
-                        |(ij, val)|{
-                            let (i, j) = (ij / self._col, ij % self._col);
-                            new_arr[j * self._row + i] = *val;
-                        }
-                    );
-                    Self{
+                    self._arr.iter().enumerate().for_each(|(ij, val)| {
+                        let (i, j) = (ij / self._col, ij % self._col);
+                        new_arr[j * self._row + i] = *val;
+                    });
+                    Self {
                         _row: self._col,
                         _col: self._row,
                         _arr: new_arr,
@@ -211,16 +217,18 @@ mod algorithm{
             }
 
             impl<T> std::fmt::Debug for Matrix2<T>
-            where T: std::fmt::Debug + Copy + Default{
+            where
+                T: std::fmt::Debug + Copy + Default,
+            {
                 fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
                     write!(f, "[")?;
-                    for i in (0..self._row){
+                    for i in (0..self._row) {
                         write!(f, "[")?;
                         let mut row_iter = self.rows(i).unwrap();
-                        for (i, val) in row_iter.enumerate(){
-                            if i == 0{
+                        for (i, val) in row_iter.enumerate() {
+                            if i == 0 {
                                 write!(f, "{:?}", val)?;
-                            } else{
+                            } else {
                                 write!(f, " {:?}", val)?;
                             }
                         }
@@ -231,72 +239,80 @@ mod algorithm{
             }
 
             impl<T> std::ops::Add for Matrix2<T>
-            where T: Arithmetic{
+            where
+                T: Arithmetic,
+            {
                 type Output = Result<Matrix2<T>, String>;
 
                 fn add(self, rhs: Self) -> Self::Output {
-                    if self._row != rhs._row || self._col != rhs._col{
+                    if self._row != rhs._row || self._col != rhs._col {
                         Err("Matrix add : Shape Mismatch.".to_string())
-                    } else{
-                        let _arr = self._arr.iter().zip(rhs._arr.iter()).map(|(l, r)|{
-                            *l + *r
-                        }).collect::<Vec::<_>>();
-                        Ok(
-                            Self{
-                                _row: self._row,
-                                _col: self._col,
-                                _arr,
-                            }
-                        )
+                    } else {
+                        let _arr = self
+                            ._arr
+                            .iter()
+                            .zip(rhs._arr.iter())
+                            .map(|(l, r)| *l + *r)
+                            .collect::<Vec<_>>();
+                        Ok(Self {
+                            _row: self._row,
+                            _col: self._col,
+                            _arr,
+                        })
                     }
                 }
             }
 
             impl<T> std::ops::Sub for Matrix2<T>
-            where T: Arithmetic{
+            where
+                T: Arithmetic,
+            {
                 type Output = Result<Matrix2<T>, String>;
 
                 fn sub(self, rhs: Self) -> Self::Output {
-                    if self._row != rhs._row || self._col != rhs._col{
+                    if self._row != rhs._row || self._col != rhs._col {
                         Err("Matrix sub : Shape Mismatch.".to_string())
-                    } else{
-                        let _arr = self._arr.iter().zip(rhs._arr.iter()).map(|(l, r)|{
-                            *l - *r
-                        }).collect::<Vec::<_>>();
-                        Ok(
-                            Self{
-                                _row: self._row,
-                                _col: self._col,
-                                _arr,
-                            }
-                        )
+                    } else {
+                        let _arr = self
+                            ._arr
+                            .iter()
+                            .zip(rhs._arr.iter())
+                            .map(|(l, r)| *l - *r)
+                            .collect::<Vec<_>>();
+                        Ok(Self {
+                            _row: self._row,
+                            _col: self._col,
+                            _arr,
+                        })
                     }
                 }
             }
 
             impl<T> std::ops::Mul for Matrix2<T>
-            where T: Arithmetic + Default{
+            where
+                T: Arithmetic + Default,
+            {
                 type Output = Result<Matrix2<T>, String>;
 
                 fn mul(self, rhs: Self) -> Self::Output {
-                    if self._col != rhs._row{
+                    if self._col != rhs._row {
                         Err("Matrix mul : Shape Mismatch.".to_string())
-                    } else{
+                    } else {
                         let rhs_transposed = rhs.transpose();
                         let mut _arr = Vec::with_capacity(self._row * rhs._col);
-                        for i in (0..self._row){
-                            for j in (0..rhs._col){
+                        for i in (0..self._row) {
+                            for j in (0..rhs._col) {
                                 _arr.push(
-                                    self.rows(i).unwrap().zip(rhs_transposed.rows(j).unwrap()).map(
-                                        |(l, r)| {
-                                            l * r
-                                        }
-                                    ).sum()
+                                    self.rows(i)
+                                        .unwrap()
+                                        .zip(rhs_transposed.rows(j).unwrap())
+                                        .map(|(l, r)| l * r)
+                                        .sum(),
                                 );
                             }
-                        };
+                        }
 
-                        Ok(Self{
+                        Ok(Self {
                             _row: self._row,
                             _col: rhs._col,
                             _arr,
@@ -306,28 +322,30 @@ mod algorithm{
             }
 
             impl<T> Matrix2<T>
-            where T: Arithmetic + Default{
-                pub fn identity(n: usize) -> Self{
+            where
+                T: Arithmetic + Default,
+            {
+                pub fn identity(n: usize) -> Self {
                     let mut _arr: Vec<T> = Vec::with_capacity(n * n);
                     _arr.resize_with(n * n, T::zero);
-                    (0..n).for_each(
-                        |i| { _arr[i * (n + 1)] = T::one(); }
-                    );
-                    Self{
+                    (0..n).for_each(|i| {
+                        _arr[i * (n + 1)] = T::one();
+                    });
+                    Self {
                         _row: n,
                         _col: n,
                         _arr,
                     }
                 }
-                pub fn pow(&self, n: usize) -> Result<Self, String>{
-                    if self._row != self._col{
+                pub fn pow(&self, n: usize) -> Result<Self, String> {
+                    if self._row != self._col {
                         return Err("Matrix pow: # of row and # of col are different.".to_string());
                     }
                     let mut res = Matrix2::<T>::identity(self._row);
                     let mut multiplier = self.clone();
                     let mut _n = n;
-                    while _n > 0{
-                        if (_n & 1) == 1{
+                    while _n > 0 {
+                        if (_n & 1) == 1 {
                             res = (res * multiplier.clone())?;
                         }
                         multiplier = (multiplier.clone() * multiplier)?;
@@ -338,15 +356,19 @@ mod algorithm{
             }
         }
 
+        pub use crate::z_modulo_k_macro as z_modulo_k;
         use std::iter::Sum;
         use std::ops::{Add, Mul, Sub};
-        pub use crate::z_modulo_k_macro as z_modulo_k;
 
         pub trait Arithmetic:
-        std::ops::Add<Output = Self> +
-        std::ops::Sub<Output = Self> +
-        std::ops::Mul<Output = Self> +
-        std::iter::Sum + Default + Copy + Sized{
+            std::ops::Add<Output = Self>
+            + std::ops::Sub<Output = Self>
+            + std::ops::Mul<Output = Self>
+            + std::iter::Sum
+            + Default
+            + Copy
+            + Sized
+        {
             fn zero() -> Self;
             fn one() -> Self;
         }
@@ -365,7 +387,7 @@ mod algorithm{
             }
         }
 
-        impl_arithmetic!{ usize u8 u16 u32 u64 u128 isize i8 i16 i32 i64 i128 f32 f64}
+        impl_arithmetic! { usize u8 u16 u32 u64 u128 isize i8 i16 i32 i64 i128 f32 f64}
 
         #[derive(Copy, Clone)]
         pub struct ZModuloK {
@@ -373,13 +395,13 @@ mod algorithm{
             pub val: usize,
         }
 
-        impl ZModuloK{
-            pub fn new(modulo: usize, val: usize) -> Self{
-                if modulo == 0{
+        impl ZModuloK {
+            pub fn new(modulo: usize, val: usize) -> Self {
+                if modulo == 0 {
                     panic!("ZModuloK new : modulo cannot be zero");
                 }
                 let val = (modulo + (val % modulo)) % modulo;
-                Self{
+                Self {
                     modulo: Some(modulo),
                     val,
                 }
@@ -393,57 +415,57 @@ mod algorithm{
             };
         }
 
-        impl Default for ZModuloK{
+        impl Default for ZModuloK {
             fn default() -> Self {
-                ZModuloK{
+                ZModuloK {
                     modulo: None,
                     val: 0,
                 }
             }
         }
 
-        impl std::ops::Add for ZModuloK{
+        impl std::ops::Add for ZModuloK {
             type Output = ZModuloK;
             fn add(self, rhs: Self) -> Self::Output {
-                let modulo = if self.modulo.is_none() && rhs.modulo.is_none(){
+                let modulo = if self.modulo.is_none() && rhs.modulo.is_none() {
                     panic!("ZModulo add : One of left modulo or right modulo should not be none.")
-                } else if self.modulo.is_none(){
+                } else if self.modulo.is_none() {
                     rhs.modulo
-                } else if rhs.modulo.is_none(){
+                } else if rhs.modulo.is_none() {
                     self.modulo
-                } else{
-                    if self.modulo != rhs.modulo{
+                } else {
+                    if self.modulo != rhs.modulo {
                         panic!("ZModuloK add : left modulo and right modulo are not same");
                     }
                     self.modulo
                 };
 
-                Self{
+                Self {
                     modulo,
-                    val: (self.val + rhs.val) % modulo.unwrap()
+                    val: (self.val + rhs.val) % modulo.unwrap(),
                 }
             }
         }
 
-        impl std::ops::Sub for ZModuloK{
+        impl std::ops::Sub for ZModuloK {
             type Output = ZModuloK;
             fn sub(self, rhs: Self) -> Self::Output {
-                let modulo = if self.modulo.is_none() && rhs.modulo.is_none(){
+                let modulo = if self.modulo.is_none() && rhs.modulo.is_none() {
                     panic!("ZModulo sub : One of left modulo or right modulo should not be none.")
-                } else if self.modulo.is_none(){
+                } else if self.modulo.is_none() {
                     rhs.modulo
-                } else if rhs.modulo.is_none(){
+                } else if rhs.modulo.is_none() {
                     self.modulo
-                } else{
-                    if self.modulo != rhs.modulo{
+                } else {
+                    if self.modulo != rhs.modulo {
                         panic!("ZModuloK sub : left modulo and right modulo are not same");
                     }
                     self.modulo
                 };
 
-                Self{
+                Self {
                     modulo,
-                    val: (self.val - rhs.val + modulo.unwrap()) % modulo.unwrap()
+                    val: (self.val - rhs.val + modulo.unwrap()) % modulo.unwrap(),
                 }
             }
         }
@@ -451,46 +473,46 @@ mod algorithm{
         impl std::ops::Mul for ZModuloK {
             type Output = ZModuloK;
             fn mul(self, rhs: Self) -> Self::Output {
-                let modulo = if self.modulo.is_none() && rhs.modulo.is_none(){
+                let modulo = if self.modulo.is_none() && rhs.modulo.is_none() {
                     panic!("ZModulo mul : One of left modulo or right modulo should not be none.")
-                } else if self.modulo.is_none(){
+                } else if self.modulo.is_none() {
                     rhs.modulo
-                } else if rhs.modulo.is_none(){
+                } else if rhs.modulo.is_none() {
                     self.modulo
-                } else{
-                    if self.modulo != rhs.modulo{
+                } else {
+                    if self.modulo != rhs.modulo {
                         panic!("ZModuloK mul : left modulo and right modulo are not same");
                     }
                     self.modulo
                 };
 
-                Self{
+                Self {
                     modulo,
-                    val: (self.val * rhs.val) % modulo.unwrap()
+                    val: (self.val * rhs.val) % modulo.unwrap(),
                 }
             }
         }
 
         impl Sum for ZModuloK {
-            fn sum<I: Iterator<Item=Self>>(iter: I) -> Self {
+            fn sum<I: Iterator<Item = Self>>(iter: I) -> Self {
                 let mut res = Self::default();
-                for item in iter{
+                for item in iter {
                     res = res + item;
                 }
                 res
             }
         }
 
-        impl Arithmetic for ZModuloK{
+        impl Arithmetic for ZModuloK {
             fn zero() -> Self {
-                Self{
+                Self {
                     modulo: None,
                     val: 0,
                 }
             }
 
             fn one() -> Self {
-                Self{
+                Self {
                     modulo: None,
                     val: 1,
                 }
@@ -501,10 +523,9 @@ mod algorithm{
 
 // Write code here.
 
-use algorithm::math::{z_modulo_k, ZModuloK};
 use algorithm::io::{Reader, Writer};
 use algorithm::math::linalg::*;
-
+use algorithm::math::{ZModuloK, z_modulo_k};
 
 fn main() {
     let mut r = Reader::new();
@@ -513,20 +534,18 @@ fn main() {
     let n = r.next::<usize>();
     let m = r.next::<usize>();
 
-    let _arr1 = (0..(n * n)).map(|_| {
-        z_modulo_k!(1000, r.next::<i64>())
-    }).collect::<Vec<_>>();
+    let _arr1 = (0..(n * n))
+        .map(|_| z_modulo_k!(1000, r.next::<i64>()))
+        .collect::<Vec<_>>();
     let arr1 = Matrix2::new(n, n, _arr1).unwrap();
 
     let res = arr1.pow(m).unwrap();
 
-    (0..n).for_each(|i|{
+    (0..n).for_each(|i| {
         let mut s = Vec::<String>::with_capacity(n);
-        res.rows(i).unwrap().for_each(
-            |val|{
-                s.push(val.val.to_string());
-            }
-        );
+        res.rows(i).unwrap().for_each(|val| {
+            s.push(val.val.to_string());
+        });
         w.writeln(s.join(" "));
     })
 }

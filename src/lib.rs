@@ -1,5 +1,6 @@
 pub mod io;
-pub mod string;
 pub mod math;
 pub mod search;
-pub mod traits;
+pub mod set;
+pub mod string;
+pub mod graph;
